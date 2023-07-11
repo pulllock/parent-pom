@@ -1,8 +1,34 @@
-# 说明
+<!-- TOC -->
 
-parent pom通常用来定义一些项目所共同遵守的约定，比如一些公共的三方依赖、编码、版本、插件、发布的仓库等等。此项目中定义了一些编码、版本、插件的声明以及发布仓库的声明。
+* [1 说明](#1-说明)
 
-# 使用
+* [2 使用](#2-使用)
+
+* [3 功能说明以及注意事项](#3-功能说明以及注意事项)
+  
+  * [3.1 编码声明](#31-编码声明)
+  
+  * [3.2 Java以及编译版本](#32-java以及编译版本)
+  
+  * [3.3 maven基础插件的声明](#33-maven基础插件的声明)
+    
+    * [3.3.1 maven-compiler-plugin](#331-maven-compiler-plugin)
+    * [3.3.2 maven-source-plugin](#332-maven-source-plugin)
+      * [3.3.2.1 使用注意事项](#3321-使用注意事项)
+    * [3.3.3 maven-surefire-plugin](#333-maven-surefire-plugin)
+      * [3.3.3.1 使用注意事项](#3331-使用注意事项)
+    * [3.3.4 maven-deploy-plugin](#334-maven-deploy-plugin)
+      * [3.3.4.1 使用注意事项](#3341-使用注意事项)
+  
+  * [3.4 声明了nexus仓库地址](#34-声明了nexus仓库地址)
+    
+    <!-- TOC -->
+
+# 1 说明
+
+parent pom通常用来定义一些项目所共同遵守的约定，比如一些公共的三方依赖、编码、版本、插件、发布的仓库等等。此项目中定义了一些编码、版本、插件的声明以及发布仓库的声明。其他项目要以此项目作为父pom。
+
+# 2 使用
 
 - 创建自己的项目或者克隆此项目
 - 根据实际需要修改项目的名称、groupId、artifactId、version等
@@ -19,17 +45,17 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 </parent>
 ```
 
-# 功能说明以及注意事项
+# 3 功能说明以及注意事项
 
-## 编码声明
+## 3.1 编码声明
 
 声明了构建以及报告输出的编码为`UTF-8`
 
-## Java以及编译版本
+## 3.2 Java以及编译版本
 
 声明了java的版本以及maven编译的版本为`17`
 
-## maven基础插件的声明
+## 3.3 maven基础插件的声明
 
 声明并升级了maven基础插件，列表如下：
 
@@ -38,10 +64,10 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 - `maven-surefire-plugin`：单测插件
 - `maven-deploy-plugin`：部署插件
 
-### maven-compiler-plugin
+### 3.3.1 maven-compiler-plugin
 
 - 升级了`maven-compiler-plugin`插件版本为`3.11.0`
-- `maven-compiler-plugin`的java版本省纪委`17`
+- `maven-compiler-plugin`的java版本升级为17`
 
 具体声明如下：
 
@@ -64,7 +90,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 
 一般实际使用的时候无需特别指定，在`mvn package`以及往上的阶段执行的时候都会默认执行掉`maven-compiler-plugin`的两个目标，如果需要单独执行compiler的目标，只需要使用如下命令即可：`mvn compile`或者`mvn test-compile`。
 
-### maven-source-plugin
+### 3.3.2 maven-source-plugin
 
 - 升级了`maven-source-plugin`插件版本为`3.2.1`
 - 指定了执行的目标为`jar-no-fork`和`test-jar-no-fork`
@@ -92,7 +118,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 
 由于默认绑定到了default生命周期的`package`阶段，故在`mvn package`以及以上的阶段执行的时候会自动执行`maven-source-plugin`的目标，如果需要单独执行目标，只需要使用如下命令即可：`mvn source:jar`、`mvn source:test-jar`、`mvn source:jar-no-fork`、`mvn source:test-jar-no-fork`。
 
-#### 使用注意事项
+#### 3.3.2.1 使用注意事项
 
 一般情况下只需要将对外提供的api的源码打包并且deploy到仓库中，对于项目中核心实现的代码并不需要打包源码并且deploy到仓库中，可以在实际的实现模块中禁用`maven-source-plugin`插件。使用方式是在核心实现模块的`pom`文件中添加如下方式进行禁用：
 
@@ -107,7 +133,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 </plugin>
 ```
 
-### maven-surefire-plugin
+### 3.3.3 maven-surefire-plugin
 
 - 升级了`maven-surefire-plugin`插件版本为`3.1.0`
 
@@ -123,7 +149,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 
 `maven-surefire-plugin`只有一个`surefire:test`目标，默认绑定到default声明周期的`test`阶段，在`mvn test`以及以上的阶段执行的时候都会执行`surefire:test`目标。
 
-#### 使用注意事项
+#### 3.3.3.1 使用注意事项
 
 如果需要执行其他的一些不符合默认命名规则的单测类，可以在项目中使用如下配置进行添加：
 
@@ -135,7 +161,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
         <includes>
             <!--- 添加spock的单测类 -->
             <include>**/*Spec</include>
-            
+
             <!-- 以下将默认的命名规则添加进来 -->
             <include>**/Test*.java</include>
             <include>**/*Test.java</include>
@@ -162,7 +188,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 </plugin>
 ```
 
-### maven-deploy-plugin
+### 3.3.4 maven-deploy-plugin
 
 - 升级了`maven-deploy-plugin`插件版本为`3.1.1`
 
@@ -178,7 +204,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 
 `maven-deploy-plugin`插件的`deploy`目标默认绑定到default生命周期的`deploy`阶段，需要使用`mvn deploy`命令来进行执行。
 
-#### 使用注意事项
+#### 3.3.4.1 使用注意事项
 
 一般情况下只需要将对外提供的api包打包并且deploy到仓库中，对于项目中核心实现的代码并不需要打包并且deploy到仓库中，可以在实际的实现模块中禁用`maven-deploy-plugin`插件。使用方式是在核心实现模块的`pom`文件中添加如下方式进行禁用：
 
@@ -193,7 +219,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 </plugin>
 ```
 
-## 声明了nexus仓库地址
+## 3.4 声明了nexus仓库地址
 
 具体声明如下：
 
