@@ -39,7 +39,7 @@ parent pom通常用来定义一些项目所共同遵守的约定，比如一些�
 
 ```
 <parent>
-    <groupId>me.cxis</groupId>
+    <groupId>fun.pullock</groupId>
     <artifactId>parent-pom</artifactId>
     <version>2.0.0-SNAPSHOT</version>
 </parent>
